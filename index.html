@@ -1,195 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IPA Spectrogram Game</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #111;
-      color: #eee;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
+<script>
+  // IPA symbols for keyboard
+  const ipaSymbols = [
+    "ŋ","ɲ","ʃ","ʒ","θ","ð","ʔ","ʎ","ʁ","ɣ","χ","ħ","ʕ",
+    "ɯ","ʏ","ø","œ","ɒ","ə","ʌ","ɜ","ɐ","ɨ","ʉ","æ"
+  ];
 
-    .game {
-      margin: 20px auto;
-      max-width: 500px;
-      padding: 10px;
-    }
+  let activeInput = null; // store last focused input
 
-    img {
-      max-width: 100%;
-      border: 3px solid #444;
-      border-radius: 10px;
-      background: #000;
-    }
-
-    .answer-row {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 15px;
-      flex-wrap: wrap;
-    }
-
-    .answer-box {
-      font-size: 24px;
-      padding: 12px;
-      width: 60px;
-      height: 60px;
-      text-align: center;
-      border-radius: 8px;
-      border: 2px solid #555;
-      background: #222;
-      color: #eee;
-    }
-
-    button {
-      padding: 12px 18px;
-      font-size: 20px;
-      margin-top: 10px;
-      border-radius: 8px;
-      border: none;
-      background: #333;
-      color: #eee;
-    }
-
-    .result {
-      font-size: 22px;
-      margin-top: 15px;
-      height: 30px;
-    }
-
-    .ipa-keyboard {
-      margin-top: 15px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
-    }
-
-    .ipa-key {
-      min-width: 48px;
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      font-size: 22px;
-      background: #222;
-      border: 1px solid #555;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .ipa-key:hover {
-      background: #444;
-    }
-
-    /* 📱 Mobile adjustments */
-    @media (max-width: 600px) {
-      .answer-box {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
+  // Render keyboard
+  const kb = document.getElementById("ipaKeys");
+  ipaSymbols.forEach(sym => {
+    const key = document.createElement("div");
+    key.className = "ipa-key";
+    key.textContent = sym;
+    key.onclick = () => {
+      if (activeInput) {
+        activeInput.value += sym;
+        activeInput.focus(); // keep cursor in box
       }
-      .ipa-key {
-        min-width: 40px;
-        min-height: 40px;
-        font-size: 18px;
-      }
-      button {
-        font-size: 18px;
-        padding: 10px 14px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="game">
-    <h1>Guess the IPA sound</h1>
-    <img id="spectro" src="" alt="spectrogram">
+    };
+    kb.appendChild(key);
+  });
 
-    <div class="answer-row" id="answerRow"></div>
+  // Game items
+  const items = [
+    { img: "feed.png", ipa: ["f","i","d"] },
+    { img: "boo.png", ipa: ["b","u"] },
+    { img: "feet.png", ipa: ["f","i","t"] }
+  ];
 
-    <div>
-      <button onclick="check()">Check</button>
-      <button onclick="next()">Next</button>
-    </div>
+  let index = 0;
 
-    <div class="result" id="result"></div>
-  </div>
+  function showItem() {
+    const item = items[index];
+    document.getElementById("spectro").src = item.img;
 
-  <div class="ipa-keyboard" id="ipaKeys"></div>
+    // Clear old inputs
+    const inputArea = document.getElementById("answer-area");
+    inputArea.innerHTML = "";
 
-  <script>
-    // IPA symbols for keyboard
-    const ipaSymbols = ["ŋ","ɲ","ʃ","ʒ","θ","ð","ʔ","ʎ","ʁ","ɣ","χ","ħ","ʕ",
-                        "ɯ","ʏ","ø","œ","ɒ","ə","ʌ","ɜ","ɐ","ɨ","ʉ","æ"];
+    // Create one input per IPA symbol
+    item.ipa.forEach(() => {
+      const inp = document.createElement("input");
+      inp.className = "answer-box";
+      inp.setAttribute("maxlength", "2");
+      inp.style.width = "40px";
 
-    const kb = document.getElementById("ipaKeys");
-    ipaSymbols.forEach(sym => {
-      const key = document.createElement("div");
-      key.className = "ipa-key";
-      key.textContent = sym;
-      key.onclick = () => {
-        const active = document.querySelector(".answer-box:focus");
-        if (active) {
-          active.value = sym;
-        }
-      };
-      kb.appendChild(key);
+      // track focus
+      inp.addEventListener("focus", () => activeInput = inp);
+
+      inputArea.appendChild(inp);
     });
 
-    // Game items
-    const items = [
-      { img: "feed.png", ipa: ["f","i","d"] },
-      { img: "boo.png", ipa: ["b","u"] },
-      { img: "feet.png", ipa: ["f","i","t"] }
-    ];
+    document.getElementById("result").textContent = "";
+    activeInput = null; // reset
+  }
 
-    let index = 0;
+  function check() {
+    const item = items[index];
+    const inputs = document.querySelectorAll(".answer-box");
+    let correctAll = true;
 
-    function showItem() {
-      const item = items[index];
-      document.getElementById("spectro").src = item.img;
-
-      const row = document.getElementById("answerRow");
-      row.innerHTML = "";
-      item.ipa.forEach(() => {
-        const inp = document.createElement("input");
-        inp.className = "answer-box";
-        inp.setAttribute("maxlength", "3");
-        inp.setAttribute("readonly", true); // no mobile keyboard
-        row.appendChild(inp);
-      });
-
-      document.getElementById("result").textContent = "";
-    }
-
-    function check() {
-      const userInputs = Array.from(document.querySelectorAll(".answer-box"))
-                              .map(inp => inp.value.trim());
-      const correct = items[index].ipa;
-      if (JSON.stringify(userInputs) === JSON.stringify(correct)) {
-        document.getElementById("result").textContent = "✅ Correct!";
-        document.getElementById("result").style.color = "lime";
+    inputs.forEach((inp, i) => {
+      if (inp.value.trim() === item.ipa[i]) {
+        inp.style.border = "2px solid lime";   // ✅ correct
       } else {
-        document.getElementById("result").textContent = "❌ Incorrect, try again";
-        document.getElementById("result").style.color = "red";
+        inp.style.border = "2px solid red";    // ❌ wrong
+        correctAll = false;
       }
-    }
+    });
 
-    function next() {
-      index = (index + 1) % items.length;
-      showItem();
+    if (correctAll) {
+      document.getElementById("result").textContent = "✅ Correct word!";
+      document.getElementById("result").style.color = "lime";
+    } else {
+      document.getElementById("result").textContent = "❌ Some sounds wrong";
+      document.getElementById("result").style.color = "red";
     }
+  }
 
-    // init
+  function next() {
+    index = (index + 1) % items.length;
     showItem();
-  </script>
-</body>
-</html>
+  }
+
+  // Init first
+  window.onload = showItem;
+</script>
