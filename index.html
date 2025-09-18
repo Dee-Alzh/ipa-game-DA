@@ -50,18 +50,19 @@
  </head>
  <body>
  <div class="game">
- <h1>Guess the IPA sound</h1>
- <img id="spectro" src="bad.png" alt="spectrogram">
- <img id="spectro" src="feed.png" alt="spectrogram">
-  <img id="spectro" src="booed.png" alt="spectrogram">
- <div>
- <input id="answer" placeholder="IPA symbol">
- <button onclick="check()">Check</button>
- </div>
- <div class="result" id="result"></div>
- <button onclick="next()">Next</button>
- </div>
- 
+  <h1>Guess the IPA sound</h1>
+  
+  <!-- Only ONE image here -->
+  <img id="spectro" src="" alt="spectrogram">
+  
+  <div>
+    <input id="answer" placeholder="IPA symbol">
+    <button onclick="check()">Check</button>
+  </div>
+  
+  <div class="result" id="result"></div>
+  <button onclick="next()">Next</button>
+</div>
  <!-- IPA Keyboard -->
  <div class="ipa-keyboard" id="ipaKeys"></div>
  
@@ -97,48 +98,40 @@
  </script>
  
  <script>
- const items = [
- { img:"bad.png", ipa:"bad" },
- ];
- 
- const item = [
- { img:"feed.png", ipa:"feed" },
- ];
+const items = [
+  { img: "bad.png", ipa: "bæd" },
+  { img: "feed.png", ipa: "fid" },
+  { img: "booed.png", ipa: "bud" }
+];
 
-  const item = [
- { img:"booed.png", ipa:"booed" }
- ];
+let index = 0;
 
- let index = 0;
- 
- function showItem(){
- document.getElementById("spectro").src = items[index].img;
- document.getElementById("answer").value = "";
- document.getElementById("result").textContent = "";
- }
- 
- function check(){
- const user = document.getElementById("answer").value.trim();
- const correct = items[index].ipa;
- if(user === correct){
- document.getElementById("result").textContent = "✅ Correct!";
- document.getElementById("result").style.color = "lime";
- } else {
- document.getElementById("result").textContent = "❌ incorrect, try again;
- document.getElementById("result").style.color = "red";
- }
- }
- 
- function next(){
- index = (index + 1) % items.length;
- showItem();
- }
- 
- 
- 
- // init
- showItem();
- </script>
+function showItem() {
+  document.getElementById("spectro").src = items[index].img;
+  document.getElementById("answer").value = "";
+  document.getElementById("result").textContent = "";
+}
+
+function check() {
+  const user = document.getElementById("answer").value.trim();
+  const correct = items[index].ipa;
+  if (user === correct) {
+    document.getElementById("result").textContent = "✅ Correct!";
+    document.getElementById("result").style.color = "lime";
+  } else {
+    document.getElementById("result").textContent = "❌ Incorrect, try again";
+    document.getElementById("result").style.color = "red";
+  }
+}
+
+function next() {
+  index = (index + 1) % items.length;
+  showItem();
+}
+
+// init
+showItem();
+</script>
  
  <script src="templatemo-neural-scripts.js"></script>
  </body>
@@ -150,6 +143,7 @@
  
 
  
+
 
 
 
