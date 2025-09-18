@@ -38,8 +38,8 @@
     <img id="spectro" src="" alt="spectrogram">
     
     <div>
-      <input id="answer" placeholder="IPA symbol">
-      <button onclick="check()">Check</button>
+    <div id="answer-area"></div>
+<button onclick="check()">Check</button>
     </div>
     
     <div class="result" id="result"></div>
@@ -49,61 +49,68 @@
   <!-- IPA Keyboard -->
   <div class="ipa-keyboard" id="ipaKeys"></div>
 
-  <script>
-    // IPA symbols for keyboard
-    const ipaSymbols = [
-      "ŋ","ɲ","ʃ","ʒ","θ","ð","ʔ","ʎ","ʁ","ɣ","χ","ħ","ʕ","ʔ",
-      "ɯ","ʏ","ø","œ","ɒ","ə","ʌ","ɜ","ɐ","ɨ","ʉ", "æ"
-    ];
+ <script>
+  // Game items: each IPA is split into array of symbols
+  const items = [
+    { img: "feed.png", ipa: ["f","i","d"] },
+    { img: "boo.png", ipa: ["b","u"] },
+    { img: "feet.png", ipa: ["f","i","t"] }
+  ];
 
-    const kb = document.getElementById("ipaKeys");
-    ipaSymbols.forEach(sym => {
-      const key = document.createElement("div");
-      key.className = "ipa-key";
-      key.textContent = sym;
-      key.onclick = () => {
-        const ans = document.getElementById("answer");
-        ans.value += sym;
-        ans.focus();
-      };
-      kb.appendChild(key);
+  let index = 0;
+
+  function showItem() {
+    const item = items[index];
+    document.getElementById("spectro").src = item.img;
+
+    // Clear old inputs
+    const inputArea = document.getElementById("answer-area");
+    inputArea.innerHTML = "";
+
+    // Create one input per symbol
+    item.ipa.forEach((_, i) => {
+      const inp = document.createElement("input");
+      inp.className = "answer-box";
+      inp.setAttribute("maxlength", "2"); // allows special IPA
+      inp.style.width = "40px";
+      inputArea.appendChild(inp);
     });
 
-    // Game items
-    const items = [
-      { img: "feed.png", ipa: "fid" },
-      { img: "boo.png", ipa: "bu" },
-      { img: "feet.png", ipa: "fit" }
-    ];
+    document.getElementById("result").textContent = "";
+  }
 
-    let index = 0;
+  function check() {
+    const item = items[index];
+    const inputs = document.querySelectorAll(".answer-box");
+    let correctAll = true;
 
-    function showItem() {
-      document.getElementById("spectro").src = items[index].img;
-      document.getElementById("answer").value = "";
-      document.getElementById("result").textContent = "";
-    }
-
-    function check() {
-      const user = document.getElementById("answer").value.trim();
-      const correct = items[index].ipa;
-      if (user === correct) {
-        document.getElementById("result").textContent = "✅ Correct!";
-        document.getElementById("result").style.color = "lime";
+    inputs.forEach((inp, i) => {
+      if (inp.value.trim() === item.ipa[i]) {
+        inp.style.border = "2px solid lime";   // ✅ correct symbol
       } else {
-        document.getElementById("result").textContent = "❌ Incorrect, try again";
-        document.getElementById("result").style.color = "red";
+        inp.style.border = "2px solid red";    // ❌ wrong symbol
+        correctAll = false;
       }
-    }
+    });
 
-    function next() {
-      index = (index + 1) % items.length;
-      showItem();
+    if (correctAll) {
+      document.getElementById("result").textContent = "✅ Correct word!";
+      document.getElementById("result").style.color = "lime";
+    } else {
+      document.getElementById("result").textContent = "❌ Some sounds wrong";
+      document.getElementById("result").style.color = "red";
     }
+  }
 
-    // init first image
+  function next() {
+    index = (index + 1) % items.length;
     showItem();
-  </script>
+  }
+
+  // init first
+  window.onload = showItem;
+</script>
+
 
   <script src="templatemo-neural-scripts.js"></script>
 </body>
@@ -111,6 +118,7 @@
 
 
  
+
 
 
 
