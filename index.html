@@ -75,6 +75,13 @@
       kb.appendChild(key);
     });
 
+    #ipaKeys {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;  /* ✅ centers symbols */
+  gap: 6px;
+}
+    
     // Game items (each IPA word is array of sounds)
     const items = [
       { img: "feed.png", ipa: ["f","i","d"] },
@@ -157,4 +164,5 @@
   <script src="templatemo-neural-scripts.js"></script>
 </body>
 </html>
+
 
