@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IPA Spectrogram Game</title>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet" />
+  <!-- TemplateMo Neural Glass CSS -->
+  <link href="templatemo-neural-style.css" rel="stylesheet" />
+
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Inter', sans-serif;
       background: #111;
       color: #eee;
       text-align: center;
@@ -15,7 +21,7 @@
     }
 
     .game {
-      margin: 20px auto;
+      margin: 40px auto;
       max-width: 500px;
       padding: 10px;
     }
@@ -27,61 +33,55 @@
       background: #000;
     }
 
-    .answer-row {
+    .answer-boxes {
+      margin-top: 15px;
       display: flex;
       justify-content: center;
       gap: 8px;
-      margin-top: 15px;
       flex-wrap: wrap;
     }
 
-    .answer-box {
-      font-size: 24px;
-      padding: 12px;
-      width: 60px;
-      height: 60px;
+    .answer-boxes input {
+      font-size: 20px;
+      padding: 6px;
+      width: 40px;
       text-align: center;
-      border-radius: 8px;
-      border: 2px solid #555;
-      background: #222;
-      color: #eee;
+      border-radius: 6px;
+      border: 1px solid #555;
     }
 
     button {
-      padding: 12px 18px;
-      font-size: 20px;
+      font-size: 18px;
       margin-top: 10px;
+      padding: 6px 14px;
       border-radius: 8px;
       border: none;
-      background: #333;
-      color: #eee;
+      cursor: pointer;
     }
 
     .result {
-      font-size: 22px;
+      font-size: 20px;
       margin-top: 15px;
-      height: 30px;
+      min-height: 28px;
     }
 
     .ipa-keyboard {
-      margin-top: 15px;
+      margin: 20px auto;
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
       justify-content: center;
+      max-width: 500px;
     }
 
     .ipa-key {
-      min-width: 48px;
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      font-size: 22px;
-      background: #222;
+      padding: 6px 10px;
       border: 1px solid #555;
+      border-radius: 6px;
       cursor: pointer;
+      background: #222;
+      color: #eee;
+      font-size: 20px;
       user-select: none;
     }
 
@@ -89,31 +89,46 @@
       background: #444;
     }
 
-    /* 📱 Mobile adjustments */
+    /* Responsive tweaks */
     @media (max-width: 600px) {
-      .answer-box {
-        width: 40px;
-        height: 40px;
+      .game {
+        width: 95%;
+      }
+      .answer-boxes input {
         font-size: 18px;
+        width: 36px;
       }
       .ipa-key {
-        min-width: 40px;
-        min-height: 40px;
         font-size: 18px;
+        padding: 5px 8px;
       }
-      button {
-        font-size: 18px;
-        padding: 10px 14px;
-      }
+    }
+
+    /* Fix overlays blocking clicks */
+    .neural-background,
+    .geometric-shapes,
+    .neural-lines {
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
+  <!-- Background decorations -->
+  <div class="neural-background"></div>
+  <div class="geometric-shapes">
+    <div class="shape"></div><div class="shape"></div><div class="shape"></div><div class="shape"></div>
+  </div>
+  <div class="neural-lines">
+    <div class="neural-line"></div><div class="neural-line"></div><div class="neural-line"></div>
+  </div>
+
+  <!-- Game -->
   <div class="game">
     <h1>Guess the IPA sound</h1>
-    <img id="spectro" src="" alt="spectrogram">
+    <img id="spectro" src="" alt="spectrogram" />
 
-    <div class="answer-row" id="answerRow"></div>
+    <!-- Dynamic answer boxes -->
+    <div class="answer-boxes" id="answerBoxes"></div>
 
     <div>
       <button onclick="check()">Check</button>
@@ -123,12 +138,15 @@
     <div class="result" id="result"></div>
   </div>
 
+  <!-- IPA Keyboard -->
   <div class="ipa-keyboard" id="ipaKeys"></div>
 
   <script>
     // IPA symbols for keyboard
-    const ipaSymbols = ["ŋ","ɲ","ʃ","ʒ","θ","ð","ʔ","ʎ","ʁ","ɣ","χ","ħ","ʕ",
-                        "ɯ","ʏ","ø","œ","ɒ","ə","ʌ","ɜ","ɐ","ɨ","ʉ","æ"];
+    const ipaSymbols = [
+      "ŋ","ɲ","ʃ","ʒ","θ","ð","ʔ","ʎ","ʁ","ɣ","χ","ħ","ʕ",
+      "ɯ","ʏ","ø","œ","ɒ","ə","ʌ","ɜ","ɐ","ɨ","ʉ","æ","i","u","a","e","o"
+    ];
 
     const kb = document.getElementById("ipaKeys");
     ipaSymbols.forEach(sym => {
@@ -136,9 +154,9 @@
       key.className = "ipa-key";
       key.textContent = sym;
       key.onclick = () => {
-        const active = document.querySelector(".answer-box:focus");
-        if (active) {
-          active.value = sym;
+        const focused = document.activeElement;
+        if (focused && focused.tagName === "INPUT") {
+          focused.value += sym;
         }
       };
       kb.appendChild(key);
@@ -157,28 +175,32 @@
       const item = items[index];
       document.getElementById("spectro").src = item.img;
 
-      const row = document.getElementById("answerRow");
-      row.innerHTML = "";
+      const boxContainer = document.getElementById("answerBoxes");
+      boxContainer.innerHTML = "";
       item.ipa.forEach(() => {
-        const inp = document.createElement("input");
-        inp.className = "answer-box";
-        inp.setAttribute("maxlength", "3");
-        row.appendChild(inp);
+        const input = document.createElement("input");
+        input.type = "text";
+        input.maxLength = 3;
+        boxContainer.appendChild(input);
       });
 
       document.getElementById("result").textContent = "";
     }
 
     function check() {
-      const userInputs = Array.from(document.querySelectorAll(".answer-box"))
-                              .map(inp => inp.value.trim());
+      const inputs = [...document.querySelectorAll("#answerBoxes input")].map(inp => inp.value.trim());
       const correct = items[index].ipa;
-      if (JSON.stringify(userInputs) === JSON.stringify(correct)) {
-        document.getElementById("result").textContent = "✅ Correct!";
-        document.getElementById("result").style.color = "lime";
+
+      const allCorrect = inputs.length === correct.length &&
+        inputs.every((val, i) => val === correct[i]);
+
+      const result = document.getElementById("result");
+      if (allCorrect) {
+        result.textContent = "✅ Correct!";
+        result.style.color = "lime";
       } else {
-        document.getElementById("result").textContent = "❌ Incorrect, try again";
-        document.getElementById("result").style.color = "red";
+        result.textContent = "❌ Incorrect, try again";
+        result.style.color = "red";
       }
     }
 
@@ -187,13 +209,10 @@
       showItem();
     }
 
-    // init
+    // Init first image
     showItem();
   </script>
+
+  <script src="templatemo-neural-scripts.js"></script>
 </body>
 </html>
-
-
-
-
-
