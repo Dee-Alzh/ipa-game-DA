@@ -47,15 +47,27 @@
 <!-- IPA Keyboard -->
   <div class="ipa-keyboard" id="ipaKeys"></div>
 
- <script> 
-   // IPA symbols for keyboard 
-   const ipaSymbols = [ "ŋ","ɲ","ʃ","ʒ","θ","ð","ʔ","ʎ","ʁ","ɣ","χ","ħ","ʕ","ʔ", "ɯ","ʏ","ø","œ","ɒ","ə","ʌ","ɜ","ɐ","ɨ","ʉ", "æ" ];
+  <script>
+    // IPA symbols for keyboard
+    const ipaSymbols = [
+      "ŋ","ɲ","ʃ","ʒ","θ","ð","ʔ","ʎ","ʁ","ɣ","χ","ħ","ʕ",
+      "ɯ","ʏ","ø","œ","ɒ","ə","ʌ","ɜ","ɐ","ɨ","ʉ","æ"
+    ];
 
     // Render keyboard
-   const kb = document.getElementById("ipaKeys"); 
-   ipaSymbols.forEach(sym => { const key = document.createElement("div"); key.className = "ipa-key"; 
-  key.textContent = sym; key.onclick = () => { const ans = document.getElementById("answer");
-  ans.value += sym; ans.focus(); }; kb.appendChild(key); });
+    const kb = document.getElementById("ipaKeys");
+    ipaSymbols.forEach(sym => {
+      const key = document.createElement("div");
+      key.className = "ipa-key";
+      key.textContent = sym;
+      key.onclick = () => {
+        const focused = document.activeElement;
+        if (focused && focused.classList.contains("answer-box")) {
+          focused.value += sym;
+        }
+      };
+      kb.appendChild(key);
+    });
 
     // Game items (IPA split into arrays of symbols)
     const items = [
@@ -121,6 +133,7 @@
   <script src="templatemo-neural-scripts.js"></script>
 </body>
 </html>
+
 
 
 
