@@ -101,7 +101,7 @@ const items = [
 { img:"bad.png", ipa:"bad" }
 ];
 
-    const items = [
+    const item = [
 { img:"feed.png", ipa:"feed" }
 ];
 let index = 0;
@@ -119,7 +119,7 @@ function check(){
     document.getElementById("result").textContent = "✅ Correct!";
     document.getElementById("result").style.color = "lime";
   } else {
-    document.getElementById("result").textContent = "❌ Correct answer: " + correct;
+    document.getElementById("result").textContent = "❌ incorrect, try again;
     document.getElementById("result").style.color = "red";
   }
 }
@@ -139,6 +139,7 @@ showItem();
 </body>
 
 </html>
+
 
 
 
