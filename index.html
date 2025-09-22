@@ -57,7 +57,7 @@
     // IPA symbols for keyboard
     const ipaSymbols = [
       "ŋ","ɲ","ʃ","ʒ","θ","ð","ʔ","ʎ","ʁ","ɣ","χ","ħ","ʕ",
-      "ɯ","ʏ","ø","œ","ɒ","ə","ʌ","ɜ","ɐ","ɨ","ʉ","æ"
+      "ɯ","ʏ","ɑ","œ","ɒ","ə","ʌ","ɛ","ɐ","ɔ","ɪ","æ"
     ];
 
     let activeInput = null; // store last focused input
@@ -79,10 +79,21 @@
 
     // Game items (each IPA word is array of sounds)
     const items = [
+      { img: "ae.png", ipa: ["æ"] },
+      { img: "scripta.png", ipa: ["ɑ"] },
+      { img: "backscripta.png", ipa: ["ɒ"] },
+      { img: "epl.png", ipa: ["ɛ"] },
+      { img: "caretA.png", ipa: ["ʌ"] },
+      { img: "e.png", ipa: ["e"] },
+      { img: "i.png", ipa: ["i"] },
+      { img: "o.png", ipa: ["o"] },
+      { img: "openo.png", ipa: ["ɔ"] },
+      { img: "smalli.png", ipa: ["ɪ"] },
+      { img: "sch.png", ipa: ["ə"] },
+      { img: "u.png", ipa: ["u"] },
       { img: "feed.png", ipa: ["f","i","d"] },
       { img: "boo.png", ipa: ["b","u"] },
-      { img: "feet.png", ipa: ["f","i","t"] },
-       { img: "ae.png", ipa: ["æ"] }
+      { img: "feet.png", ipa: ["f","i","t"] }
     ];
 
     let index = 0;
@@ -160,6 +171,7 @@
   <script src="templatemo-neural-scripts.js"></script>
 </body>
 </html>
+
 
 
 
